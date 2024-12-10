@@ -1,27 +1,49 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
+	"image"
 	"log"
 	"os"
+	"strings"
 )
 
 func main() {
-	//result := 0
-	puzzle := make([][]string, 140)
-
-	input, err := os.Open("input.txt")
+	input, err := os.ReadFile("input.txt")
 	if err != nil {
 		log.Fatalln(err)
 	}
-	defer input.Close()
-	i := 0
 
-	scanner := bufio.NewScanner(input)
-	for scanner.Scan() {
-		puzzle[i] = append(puzzle[i], scanner.Text())
-		i++
+	grid := map[image.Point]rune{}
+	for y, s := range strings.Split(strings.TrimSpace(string(input)), "\n") {
+		for x, r := range s {
+			grid[image.Point{x, y}] = r
+		}
 	}
-	fmt.Println(puzzle)
+
+	adj := func(p image.Point, l int) []string {
+		delta := []image.Point{
+			{0, -1}, {1, 0}, {0, 1}, {-1, 0},
+			{-1, -1}, {1, -1}, {1, 1}, {-1, 1},
+		}
+
+		words := make([]string, len(delta))
+		for i, d := range delta {
+			for n := range l {
+				words[i] += string(grid[p.Add(d.Mul(n))])
+			}
+		}
+		return words
+	}
+
+	part1, part2 := 0, 0
+	for p := range grid {
+		part1 += strings.Count(strings.Join(adj(p, 4), " "), "XMAS")
+		part2 += strings.Count("AMAMASASAMAMAS", strings.Join(adj(p, 2)[4:], ""))
+	}
+
+	fmt.Println(part1, part2)
 }
+
+// Credit to u/Pyr0Byt3 on Reddit
+// I was stuck and this solution is great!!
