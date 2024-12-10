@@ -9,7 +9,7 @@ import (
 
 func main() {
 	//result := 0
-	puzzle := make([][]string, 1)
+	puzzle := make([][]string, 140)
 
 	input, err := os.Open("input.txt")
 	if err != nil {
@@ -21,6 +21,7 @@ func main() {
 	scanner := bufio.NewScanner(input)
 	for scanner.Scan() {
 		puzzle[i] = append(puzzle[i], scanner.Text())
+		i++
 	}
 	fmt.Println(puzzle)
 }
